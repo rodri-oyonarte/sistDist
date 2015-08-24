@@ -1,0 +1,57 @@
+{
+  "kind": "calendar#event",
+  "etag": "\"2856072438190000\"",
+  "id": "cvl3t28qtfhcb3494l1m9vo6v0_20160517",
+  "status": "confirmed",
+  "htmlLink": "https://www.google.com/calendar/event?eid=Y3ZsM3QyOHF0ZmhjYjM0OTRsMW05dm82djBfMjAxNjA1MTcgb3lvbmFydGUuOTBAbQ",
+  "created": "2014-11-17T13:24:39.000Z",
+  "updated": "2015-08-17T20:02:37.643Z",
+  "summary": "Mes leo",
+  "colorId": "4",
+  "creator": {
+    "email": "oyonarte.90@gmail.com",
+    "displayName": "rodrigo oyonarte",
+    "self": true
+  },
+  "organizer": {
+    "email": "oyonarte.90@gmail.com",
+    "displayName": "rodrigo oyonarte",
+    "self": true
+  },
+  "start": {
+    "date": "2016-05-17"
+  },
+  "end": {
+    "date": "2016-05-18"
+  },
+  "recurringEventId": "cvl3t28qtfhcb3494l1m9vo6v0",
+  "originalStartTime": {
+    "date": "2016-05-17"
+  },
+  "transparency": "transparent",
+  "iCalUID": "cvl3t28qtfhcb3494l1m9vo6v0@google.com",
+  "sequence": 0,
+  "attendees": [
+    {
+      "email": "oyonarte.90@gmail.com",
+      "displayName": "rodrigo oyonarte",
+      "organizer": true,
+      "self": true,
+      "responseStatus": "accepted"
+    },
+    {
+      "email": "leogomezg90@gmail.com",
+      "displayName": "Maria Leonor Gòmez Gonzalez",
+      "responseStatus": "accepted"
+    }
+  ],
+  "reminders": {
+    "useDefault": false,
+    "overrides": [
+      {
+        "method": "popup",
+        "minutes": 10
+      }
+    ]
+  }
+}
