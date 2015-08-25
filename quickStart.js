@@ -2,6 +2,9 @@ var fs = require('fs');
 var readline = require('readline');
 var google = require('googleapis');
 var googleAuth = require('google-auth-library');
+var express = require('express');
+var http = require('http');
+var app = express();
 
 var SCOPES = ['https://www.googleapis.com/auth/calendar'];
 var TOKEN_DIR = (process.env.HOME || process.env.HOMEPATH ||
@@ -19,7 +22,6 @@ function start(accion){
     }
     // Authorize a client with the loaded credentials, then call the
     // Google Calendar API.
-    //console.log(TOKEN_DIR);
     
     authorize(JSON.parse(content), accion);
   });
@@ -104,7 +106,8 @@ function storeToken(token) {
  * lista de los siguientes 10 eventos
  * @param {google.auth.OAuth2} auth An authorized OAuth2 client.
  */
- //lista de los siguientes 10 eventos
+app.get('/calendar/:calendarId/event', function (req1, resp1){}
+ //lista de los siguientes 10 eventos  metodo GET
 function listEvents(auth) {
   var calendar = google.calendar('v3');
   calendar.events.list({
@@ -134,7 +137,8 @@ function listEvents(auth) {
   });
 }
 
-//obtener evento
+app.get('/calendar/:calendarId/event/:eventId', function (req1, resp1){}
+//obtener evento  metodo GET
 function getEvent(auth){
   var calendar = google.calendar('v3');
   
@@ -155,7 +159,8 @@ function getEvent(auth){
   
 }
 
-//borrar un evento
+app.delete('/calendar/:calendarId/event/:eventId', function (req1, resp1){}
+//borrar un evento metodo DELETE
 function deleteEvent(auth){
   var calendar = google.calendar('v3');
   
@@ -175,7 +180,8 @@ function deleteEvent(auth){
   
 }
 
-//editar un evento
+app.put('/calendar/:calendarId/event/:eventId', function (req1, resp1){}
+//editar un evento metodo PUT
 function updateEvent(auth) {
   var calendar = google.calendar('v3');
 
@@ -218,7 +224,8 @@ function updateEvent(auth) {
   });
 }
 
-//agregar evento
+app.post('/calendar/:calendarId/event', function (req, res){}
+//agregar evento metodo post POST
 function addEvent(auth) {
   var calendar = google.calendar('v3');
 
