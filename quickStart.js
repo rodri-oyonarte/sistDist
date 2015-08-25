@@ -12,9 +12,12 @@ var TOKEN_DIR = (process.env.HOME || process.env.HOMEPATH ||
 var TOKEN_PATH = TOKEN_DIR + 'calendar-api-quickstart.json';
 
 
-start(deleteEvent);//probar metodos
+//start(listEvents);//probar metodos
+var server = app.listen(3000, function() {
+    console.log('Escuchando en el puerto %d', server.address().port);
+});
 // Load client secrets from a local file.
-function start(accion){
+function start(accion,resp1){
   fs.readFile('client_secret.json', function processClientSecrets(err, content) {
     if (err) {
       console.log('Error loading client secret file: ' + err);
@@ -23,7 +26,7 @@ function start(accion){
     // Authorize a client with the loaded credentials, then call the
     // Google Calendar API.
     
-    authorize(JSON.parse(content), accion);
+    authorize(JSON.parse(content), accion,resp1);
   });
 }
 
@@ -34,7 +37,7 @@ function start(accion){
  * @param {Object} credentials The authorization client credentials.
  * @param {function} callback The callback to call with the authorized client.
  */
-function authorize(credentials, callback) {
+function authorize(credentials, callback,resp1) {
   var clientSecret = credentials.installed.client_secret;
   var clientId = credentials.installed.client_id;
   var redirectUrl = credentials.installed.redirect_uris[0];
@@ -44,10 +47,10 @@ function authorize(credentials, callback) {
   // Check if we have previously stored a token.
   fs.readFile(TOKEN_PATH, function(err, token) {
     if (err) {
-      getNewToken(oauth2Client, callback);
+      getNewToken(oauth2Client, callback,resp1);
     } else {
       oauth2Client.credentials = JSON.parse(token);
-      callback(oauth2Client);
+      callback(oauth2Client,resp1);
     }
   });
 }
@@ -60,7 +63,7 @@ function authorize(credentials, callback) {
  * @param {getEventsCallback} callback The callback to call with the authorized
  *     client.
  */
-function getNewToken(oauth2Client, callback) {
+function getNewToken(oauth2Client, callback,resp1) {
   var authUrl = oauth2Client.generateAuthUrl({
     access_type: 'offline',
     scope: SCOPES
@@ -79,7 +82,7 @@ function getNewToken(oauth2Client, callback) {
       }
       oauth2Client.credentials = token;
       storeToken(token);
-      callback(oauth2Client);
+      callback(oauth2Client,resp1);
     });
   });
 }
@@ -101,15 +104,19 @@ function storeToken(token) {
   console.log('Token stored to ' + TOKEN_PATH);
 }
 
+app.get('/calendar/:calendarId/event', function (req1, resp1){
+  start(listEvents,resp1);
+});
+
 /**
  * Lists the next 10 events on the user's primary calendar.
  * lista de los siguientes 10 eventos
  * @param {google.auth.OAuth2} auth An authorized OAuth2 client.
  */
-app.get('/calendar/:calendarId/event', function (req1, resp1){}
  //lista de los siguientes 10 eventos  metodo GET
-function listEvents(auth) {
+function listEvents(auth,resp1) {
   var calendar = google.calendar('v3');
+  var eventos= [];
   calendar.events.list({
     auth: auth,
     calendarId: 'primary',
@@ -132,14 +139,18 @@ function listEvents(auth) {
         var start = event.start.dateTime || event.start.date;
         //console.log(JSON.stringify(event, null, 2));
         console.log('%s - %s - %s',event.id, start, event.summary);
+        eventos.push(event);
       }
     }
+    resp1.json({eventos: eventos});
   });
 }
 
-app.get('/calendar/:calendarId/event/:eventId', function (req1, resp1){}
+app.get('/calendar/:calendarId/event/:eventId', function (req1, resp1){
+    start(getEvent,resp1);
+});
 //obtener evento  metodo GET
-function getEvent(auth){
+function getEvent(auth,resp1){
   var calendar = google.calendar('v3');
   
   calendar.events.get({
@@ -159,9 +170,11 @@ function getEvent(auth){
   
 }
 
-app.delete('/calendar/:calendarId/event/:eventId', function (req1, resp1){}
+app.delete('/calendar/:calendarId/event/:eventId', function (req1, resp1){
+    start(listEvents,resp1);
+});
 //borrar un evento metodo DELETE
-function deleteEvent(auth){
+function deleteEvent(auth,resp1){
   var calendar = google.calendar('v3');
   
   calendar.events.delete({
@@ -180,9 +193,11 @@ function deleteEvent(auth){
   
 }
 
-app.put('/calendar/:calendarId/event/:eventId', function (req1, resp1){}
+app.put('/calendar/:calendarId/event/:eventId', function (req1, resp1){
+    start(updateEvent,resp1);
+});
 //editar un evento metodo PUT
-function updateEvent(auth) {
+function updateEvent(auth,resp1) {
   var calendar = google.calendar('v3');
 
   var event = {
@@ -224,9 +239,11 @@ function updateEvent(auth) {
   });
 }
 
-app.post('/calendar/:calendarId/event', function (req, res){}
+app.post('/calendar/:calendarId/event', function (req, res){
+    start(addEvent,res);
+});
 //agregar evento metodo post POST
-function addEvent(auth) {
+function addEvent(auth,resp1) {
   var calendar = google.calendar('v3');
 
   var event = {
