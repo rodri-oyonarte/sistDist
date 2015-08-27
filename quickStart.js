@@ -119,9 +119,10 @@ function storeToken(token) {
 function listEvents(auth,resp1,datos) {
   var calendar = google.calendar('v3');
   var eventos= [];
+  //console.log(datos.calendarId);
   calendar.events.list({
     auth: auth,
-    calendarId: 'primary',
+    calendarId: datos.calendarId,
     timeMin: (new Date()).toISOString(),
     maxResults: 10,
     singleEvents: true,
@@ -134,13 +135,14 @@ function listEvents(auth,resp1,datos) {
     var events = response.items;
     if (events.length == 0) {
       console.log('No upcoming events found.');
+      eventos = "no upcoming events found.";
     } else {
-      console.log('Upcoming 10 events:');
+      //console.log('Upcoming 10 events:');
       for (var i = 0; i < events.length; i++) {
         var event = events[i];
         var start = event.start.dateTime || event.start.date;
         //console.log(JSON.stringify(event, null, 2));
-        console.log('%s - %s - %s',event.id, start, event.summary);
+        //console.log('%s - %s - %s',event.id, start, event.summary);
         eventos.push(event);
       }
     }
@@ -155,8 +157,8 @@ function getEvent(auth,resp1,datos){
   
   calendar.events.get({
     auth: auth,
-    calendarId: 'primary',
-    eventId:'lmv89s1160esdd82pjj6tq4q5g_20150828T160000Z',
+    calendarId: datos.calendarId,
+    eventId: datos.eventId,
   }, function(err, response) {
     if (err) {
       console.log('(event get)There was an error contacting the Calendar service: ' + err);
@@ -165,7 +167,7 @@ function getEvent(auth,resp1,datos){
     console.log('Event geted: ');
     var evento = response;
     console.log(JSON.stringify(evento, null, 2));
-
+    resp1.json(evento)
   });
   
 }
@@ -177,15 +179,16 @@ function deleteEvent(auth,resp1,datos){
   
   calendar.events.delete({
     auth: auth,
-    calendarId: 'primary',
-    eventId:'lmv89s1160esdd82pjj6tq4q5g_20150828T160000Z',
+    calendarId: datos.calendarId,
+    eventId: datos.eventId,
   }, function(err, response) {
     if (err) {
       console.log('(event delete)There was an error contacting the Calendar service: ' + err);
+      resp1.send('(event delete)There was an error contacting the Calendar service: ' + err);
       return;
     }
     console.log('Event deleted: ');
-    
+    resp1.json({});
 
   });
   
@@ -196,7 +199,7 @@ function deleteEvent(auth,resp1,datos){
 function updateEvent(auth,resp1,datos) {
   var calendar = google.calendar('v3');
 
-  var event = {
+  var event = datos.eventUpdate; /*= {
     'summary': 'evento cambiado por metodo',
     'location': '800 Howard St., San Francisco, CA 94103',
     'description': 'A chance to hear more about Google\'s developer products.',
@@ -208,10 +211,10 @@ function updateEvent(auth,resp1,datos) {
       'dateTime': '2015-08-28T17:00:00-07:00',
       'timeZone': 'America/Los_Angeles',
     },
-    /*'attendees': [
+    'attendees': [
       {'email': 'lpage@example.com'},
       {'email': 'sbrin@example.com'},
-    ],*/
+    ],
     'reminders': {
       'useDefault': false,
       'overrides': [
@@ -219,19 +222,21 @@ function updateEvent(auth,resp1,datos) {
         {'method': 'popup', 'minutes': 10},
       ],
     },
-  };
+  };*/
   
   calendar.events.update({
     auth: auth,
-    calendarId: 'primary',
-    eventId:'lmv89s1160esdd82pjj6tq4q5g_20150828T160000Z',
+    calendarId: datos.calendarId,
+    eventId: datos.eventId,
     resource: event,
   }, function(err, event) { //event es la respuesta del metodo (va a ser el evento creado)
     if (err) {
       console.log('(event edit)There was an error contacting the Calendar service: ' + err);
+      resp1.send('(event edit)There was an error contacting the Calendar service: ' + err);
       return;
     }
-    console.log('Event created: %s', event.htmlLink);
+    console.log('Event updated: %s', event.htmlLink);
+    resp1.json(event);
   });
 }
 
@@ -261,7 +266,6 @@ function addEvent(auth,resp1,datos) {
     'reminders': {
       'useDefault': false,
       'overrides': [
-        {'method': 'email', 'minutes': 24 * 60},
         {'method': 'popup', 'minutes': 10},
       ],
     },
@@ -274,8 +278,11 @@ function addEvent(auth,resp1,datos) {
   }, function(err, event) { //event es la respuesta del metodo (va a ser el evento creado)
     if (err) {
       console.log('There was an error contacting the Calendar service: ' + err);
+      resp1.send('There was an error contacting the Calendar service: ' + err);
+
       return;
     }
     console.log('Event created: %s', event.htmlLink);
+
   });
 }
