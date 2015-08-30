@@ -38,5 +38,9 @@ app.put('/calendar/:calendarId/event/:eventId', function (req1, resp1){
 });
 
 app.post('/calendar/:calendarId/event', function (req, res){
+	var today = new Date();
+	datos.calendarId = req.params.calendarId;
+	req.body.summary = req.body.summary + " creado por APIsistDist"
+	datos.eventAdd = req.body;
     google.start('addEvent',res,datos);
 });

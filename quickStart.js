@@ -30,7 +30,6 @@ module.exports = {
         case "updateEvent": authorize(JSON.parse(content),updateEvent,resp1,datos); break;
         case "addEvent": authorize(JSON.parse(content),addEvent,resp1,datos); break;
       }
-      //authorize(JSON.parse(content),accion,resp1,datos);
     });
 }}
 
@@ -119,7 +118,6 @@ function storeToken(token) {
 function listEvents(auth,resp1,datos) {
   var calendar = google.calendar('v3');
   var eventos= [];
-  //console.log(datos.calendarId);
   calendar.events.list({
     auth: auth,
     calendarId: datos.calendarId,
@@ -141,8 +139,6 @@ function listEvents(auth,resp1,datos) {
       for (var i = 0; i < events.length; i++) {
         var event = events[i];
         var start = event.start.dateTime || event.start.date;
-        //console.log(JSON.stringify(event, null, 2));
-        //console.log('%s - %s - %s',event.id, start, event.summary);
         eventos.push(event);
       }
     }
@@ -199,30 +195,7 @@ function deleteEvent(auth,resp1,datos){
 function updateEvent(auth,resp1,datos) {
   var calendar = google.calendar('v3');
 
-  var event = datos.eventUpdate; /*= {
-    'summary': 'evento cambiado por metodo',
-    'location': '800 Howard St., San Francisco, CA 94103',
-    'description': 'A chance to hear more about Google\'s developer products.',
-    'start': {
-      'dateTime': '2015-08-28T09:00:00-07:00',
-      'timeZone': 'America/Los_Angeles',
-    },
-    'end': {
-      'dateTime': '2015-08-28T17:00:00-07:00',
-      'timeZone': 'America/Los_Angeles',
-    },
-    'attendees': [
-      {'email': 'lpage@example.com'},
-      {'email': 'sbrin@example.com'},
-    ],
-    'reminders': {
-      'useDefault': false,
-      'overrides': [
-        {'method': 'email', 'minutes': 24 * 60},
-        {'method': 'popup', 'minutes': 10},
-      ],
-    },
-  };*/
+  var event = datos.eventUpdate; 
   
   calendar.events.update({
     auth: auth,
@@ -244,36 +217,11 @@ function updateEvent(auth,resp1,datos) {
 function addEvent(auth,resp1,datos) {
   var calendar = google.calendar('v3');
 
-  var event = {
-    'summary': 'Google I/O 2015',
-    'location': '800 Howard St., San Francisco, CA 94103',
-    'description': 'A chance to hear more about Google\'s developer products.',
-    'start': {
-      'dateTime': '2015-08-28T09:00:00-07:00',
-      'timeZone': 'America/Los_Angeles',
-    },
-    'end': {
-      'dateTime': '2015-08-28T17:00:00-07:00',
-      'timeZone': 'America/Los_Angeles',
-    },
-    'recurrence': [
-      'RRULE:FREQ=DAILY;COUNT=2'
-    ],
-    /*'attendees': [
-      {'email': 'lpage@example.com'},
-      {'email': 'sbrin@example.com'},
-    ],*/
-    'reminders': {
-      'useDefault': false,
-      'overrides': [
-        {'method': 'popup', 'minutes': 10},
-      ],
-    },
-  };
+  var event = datos.eventAdd;
   
   calendar.events.insert({
     auth: auth,
-    calendarId: 'primary',
+    calendarId: datos.calendarId,
     resource: event,
   }, function(err, event) { //event es la respuesta del metodo (va a ser el evento creado)
     if (err) {
@@ -283,6 +231,7 @@ function addEvent(auth,resp1,datos) {
       return;
     }
     console.log('Event created: %s', event.htmlLink);
+    resp1.json(event);
 
   });
 }
